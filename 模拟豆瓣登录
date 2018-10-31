@@ -1,0 +1,14 @@
+利用爬虫模拟豆瓣登录的过程就是利用其模拟用户的浏览器行为的过程
+
+为了使豆瓣服务器认为我们是用户，首先要加上合适的request headers。通过在浏览器上执行登录操作，抓取login包，里面就有我们需要的headers、post的数据。
+
+将headers取出，再将需要传递的formdata：'form_email', 'form_password' post给login对应的url，就可以登陆了。
+
+这里要考虑验证码的问题，如果不需要验证码，只要直接将上述data构建并post给url就可以了。
+但如果出现验证码，我们再次查看login中的formdata发现，多了两项参数“captcha-id”与“captcha-solution”，分别是验证码id以及我们输入的验证码。此时我们
+需要先取得验证码的图片url，然后下载到本地，再通过检查网页取得其captcha-id，然后就是“captcha-solution”了，打开下载好的图片后，使用input函数，将
+验证码输入得到captcha-solution。这样再次使用
+
+scrapy.FormRequest.from_response(response, headers=self.headers, formdata=data, callback=self.parse_after_login)
+
+就可以成功登录了。
